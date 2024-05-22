@@ -26,19 +26,19 @@ app.use(cors())
 
 
 
-  app.get('/', (request, response) =>{
-    response.send('<h1>Hello im sergio World!</h1>')
-  })
+app.get('/', (request, response) => {
+  response.send('<h1>Hello im sergio World!</h1>')
+})
 
-  app.get('/api/notes', (request, response) =>{
-    Note.find({}).then(notes=>{
-      response.json(notes)
-    })
+app.get('/api/notes', (request, response) => {
+  Note.find({}).then(notes => {
+    response.json(notes)
   })
+})
 
-  app.get('/api/notes/:id', (request, response, next) => {
-    Note.findById(request.params.id)
-    .then(note=>{
+app.get('/api/notes/:id', (request, response, next) => {
+  Note.findById(request.params.id)
+    .then(note => {
       if(note){
         response.json(note)
       } else {
@@ -48,85 +48,74 @@ app.use(cors())
       }
     })
     //Si se rechaza una promesa devuelta por el método findById
-    .catch(error=> next(error)) // pasa el error a express(), el cual tiene su propio controlador de errores
-  })
+    .catch(error => next(error)) // pasa el error a express(), el cual tiene su propio controlador de errores
+})
 
-  app.delete('/api/notes/:id', (request, response) =>{
-    Note.findByIdAndDelete(request.params.id)
-    .then(result=>{ // el parametro "result" podría usarse para verificar si un recurso realmente se eliminó y podriamos usar esta informacion para devolver códigos de estado diferentes
+app.delete('/api/notes/:id', (request, response,next) => {
+  Note.findByIdAndDelete(request.params.id)
+    .then(() => { // el parametro "result" podría usarse para verificar si un recurso realmente se eliminó y podriamos usar esta informacion para devolver códigos de estado diferentes
       // 204 = sin contenido
       response.status(204).end()
     })
-    .catch(error=>next(error))
+    .catch(error => next(error))
+})
+
+app.post('/api/notes', (request, response, next) => {
+  const body = request.body
+
+  // Si la nota no tiene la propiedad content, respondemos a la solicitud con el código de estado 400 bad request.
+  if(body.content===undefined){
+    return response.status(400).json({ error: 'content missing' })
+  }
+  const note = new Note({
+    content: body.content,
+    important: body.important || false,
   })
 
-  app.post('/api/notes', (request, response, next) =>{
-    const body = request.body
-
-    // Si la nota no tiene la propiedad content, respondemos a la solicitud con el código de estado 400 bad request.
-    if(body.content===undefined){
-      return response.status(400).json({error: 'content missing'})
-    }
-
-    const note = new Note({
-      content: body.content,
-      important: body.important || false,
-    })
-
-    note.save()
+  note.save()
     .then(savedNote => {
       response.json(savedNote)
     })
     .catch(error => next(error))
-  })
+})
 
-  app.put('/api/notes/:id', (request, response, next)=>{
-    const {content, important} = request.body
-
-    Note.findByIdAndUpdate(
-      request.params.id, 
-      {content, important}, 
-      {new: true, runValidators:true, context: 'query'})
+app.put('/api/notes/:id', (request, response, next) => {
+  const { content, important } = request.body
+  Note.findByIdAndUpdate(
+    request.params.id,
+    { content, important },
+    { new: true, runValidators:true, context: 'query' })
     .then(updatedNote => {
       response.json(updatedNote)
     })
     .catch(error => next(error))
-    
+})
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({
+    error: 'unknown endpoint'
   })
+}
 
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
 
-
-
-
-  const unknownEndpoint = (request, response) => {
-    response.status(404).send({
-      error: 'unknown endpoint'
-    })
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  console.log(error.name)
+  if(error.name==='CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
   }
-  
-  // handler of requests with unknown endpoint
-  app.use(unknownEndpoint)
-  
-
-
-  const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-    console.log(error.name)
-    if(error.name==='CastError') {
-      return response.status(400).send({error: 'malformatted id'})
-    } 
-    else if (error.name ==='ValidationError') {
-      return response.status(400).json({error: error.message})
-    }
-    next(error)
+  else if (error.name ==='ValidationError') {
+    return response.status(400).json({ error: error.message })
   }
+  next(error)
+}
 
-  // handler of requests with result to errors
-  app.use(errorHandler)
-  
-
+// handler of requests with result to errors
+app.use(errorHandler)
 
 const PORT = process.env.PORT || 3001
-app.listen(PORT, ()=>{
-    console.log(`Server running on port ${PORT}`)
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
 })
