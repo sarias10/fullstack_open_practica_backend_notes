@@ -1,4 +1,4 @@
-import globals from "globals";
+import globals from 'globals'
 import js from "@eslint/js"
 import stylisticJs from '@stylistic/eslint-plugin-js'
 
@@ -7,7 +7,7 @@ export default [
   languageOptions: {sourceType: "commonjs"}
   },
   {languageOptions: { globals: globals.node }},
-  {ignores: ["dist","node_modules"]},
+  {ignores: ["dist","node_modules", "eslint.config.mjs"]},
   {plugins: {'@stylistic/js': stylisticJs},
     rules: {
       'eqeqeq': 'error',
@@ -21,7 +21,7 @@ export default [
       'no-console': 0,
       '@stylistic/js/indent': [
         'error',
-        2
+        4
       ],
       '@stylistic/js/linebreak-style': [
           'error',
@@ -40,4 +40,4 @@ export default [
   js.configs.recommended
   
   
-];
+]
