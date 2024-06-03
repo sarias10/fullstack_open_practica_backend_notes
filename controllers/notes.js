@@ -2,57 +2,54 @@ const notesRouter = require('express').Router()
 const Note = require('../models/note')
 
 
-notesRouter.get('/', (request, response) => {
-    Note.find({}).then(notes => {
-        response.json(notes)
-    })
+notesRouter.get('/', async (request, response) => {
+    const notes = await Note.find({})
+    response.json(notes)
 })
 
-notesRouter.get('/:id', (request, response, next) => {
-    Note.findById(request.params.id)
-        .then(note => {
-            if(note){
-                response.json(note)
-            }
-            else {
-                // .end() se emplea para concluir rápidamente la respuesta sin incluir ningún dato.
-                // 404 = no encontrado
-                response.status(404).end()
-            }
-        })
+notesRouter.get('/:id', async (request, response, next) => {
+    try {
+        const note = await Note.findById(request.params.id)
+        if(note){
+            response.json(note)
+        }
+        else {
+            // .end() se emplea para concluir rápidamente la respuesta sin incluir ningún dato.
+            // 404 = no encontrado
+            response.status(404).end()
+        }
+    } catch (exception) {
         //Si se rechaza una promesa devuelta por el método findById
-        .catch(error => next(error)) // pasa el error a express(), el cual tiene su propio controlador de errores
+        // pasa el error a express(), el cual tiene su propio controlador de errores
+        next(exception)
+    }
 })
 
-notesRouter.post('/', (request, response, next) => {
+notesRouter.post('/', async (request, response, next) => {
     const body = request.body
 
-    // Si la nota no tiene la propiedad content, respondemos a la solicitud con el código de estado 400 bad request.
-    if(body.content===undefined){
-        return response.status(400).json({ error: 'content missing' })
-    }
     const note = new Note({
         content: body.content,
         important: body.important || false,
     })
-
-    note.save()
-        .then(savedNote => {
-            response.json(savedNote)
-        })
-        .catch(error => next(error))
+    try {
+        const savedNote = await note.save()
+        //un código 201 significa que una solicitud se procesó correctamente y devolvió,o creó, un recurso o resources en el proceso
+        response.status(201).json(savedNote)
+    } catch(exception){
+        next(exception)
+    }
 })
 
-notesRouter.delete('/:id', (request, response,next) => {
-    Note.findByIdAndDelete(request.params.id)
-        .then(() => { // el parametro "result" podría usarse para verificar si un recurso realmente se eliminó y podriamos usar esta informacion para devolver códigos de estado diferentes
-            // 204 = sin contenido
-            response.status(204).end()
-        })
-        .catch(error => next(error))
+notesRouter.delete('/:id', async (request, response,next) => {
+    try {
+        await Note.findByIdAndDelete(request.params.id)
+        // 204 = sin contenido
+        response.status(204).end()
+    } catch (exception) {
+        next(exception)
+    }
 })
-
-
 
 notesRouter.put('/:id', (request, response, next) => {
     const body = request.body
