@@ -8,47 +8,34 @@ notesRouter.get('/', async (request, response) => {
 })
 
 notesRouter.get('/:id', async (request, response, next) => {
-    try {
-        const note = await Note.findById(request.params.id)
-        if(note){
-            response.json(note)
-        }
-        else {
-            // .end() se emplea para concluir rápidamente la respuesta sin incluir ningún dato.
-            // 404 = no encontrado
-            response.status(404).end()
-        }
-    } catch (exception) {
-        //Si se rechaza una promesa devuelta por el método findById
-        // pasa el error a express(), el cual tiene su propio controlador de errores
-        next(exception)
+    const note = await Note.findById(request.params.id)
+    if(note){
+        response.json(note)
+    }
+    else {
+        // .end() se emplea para concluir rápidamente la respuesta sin incluir ningún dato.
+        // 404 = no encontrado
+        response.status(404).end()
     }
 })
 
-notesRouter.post('/', async (request, response, next) => {
+notesRouter.post('/', async (request, response) => {
     const body = request.body
 
     const note = new Note({
         content: body.content,
         important: body.important || false,
     })
-    try {
-        const savedNote = await note.save()
-        //un código 201 significa que una solicitud se procesó correctamente y devolvió,o creó, un recurso o resources en el proceso
-        response.status(201).json(savedNote)
-    } catch(exception){
-        next(exception)
-    }
+
+    const savedNote = await note.save()
+    //un código 201 significa que una solicitud se procesó correctamente y devolvió,o creó, un recurso o resources en el proceso
+    response.status(201).json(savedNote)
 })
 
-notesRouter.delete('/:id', async (request, response,next) => {
-    try {
-        await Note.findByIdAndDelete(request.params.id)
-        // 204 = sin contenido
-        response.status(204).end()
-    } catch (exception) {
-        next(exception)
-    }
+notesRouter.delete('/:id', async (request, response) => {
+    await Note.findByIdAndDelete(request.params.id)
+    // 204 = sin contenido
+    response.status(204).end()
 })
 
 notesRouter.put('/:id', (request, response, next) => {

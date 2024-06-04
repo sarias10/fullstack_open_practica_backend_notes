@@ -1,5 +1,9 @@
 const config = require('./utils/config')
 const express = require('express')
+//nos permite eliminar los bloques try/catch por completo en funciones async
+//es decir, pasa automáticamente las excepciones al middleware del manejo de errores
+//se debe importar antes de importar las rutas
+require('express-async-errors')
 const app = express()
 const cors = require('cors')
 const notesRouter = require('./controllers/notes')
