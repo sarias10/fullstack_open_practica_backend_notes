@@ -13,7 +13,7 @@ const Note = require('../models/note')
 //la base de datos se borra al principio y luego guardamos las notas almacenadas en la matriz initialNotes
 beforeEach(async () => {
     await Note.deleteMany({})
-
+    // de esta forma se garantiza un orden de ejecución específico
     for (let note of helper.initialNotes) {
         let noteObject = new Note(note)
         await noteObject.save()
