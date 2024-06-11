@@ -5,6 +5,7 @@ POST http://localhost:3001/api/notes/ HTTP/1.1
 content-type: application/json
 
 {
-    
-    "important": true
+    "content": "probando otra vez si sale userID",
+    "important": false,
+    "userId": "666856ffbc449945449331f2"
 }
