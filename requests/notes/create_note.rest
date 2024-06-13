@@ -3,9 +3,9 @@ GET http://localhost:3001/api/notes/
 ###
 POST http://localhost:3001/api/notes/ HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImtlbGx5IiwiaWQiOiI2NjZiODVkNWY3NDJmM2ZlYWY2ZTM3OGIiLCJpYXQiOjE3MTgzMjI3NDh9.DVchgRtkYHvl_7dJud-KWfPjNiY1vwXOOQ_OkJGeM6M
 
 {
-    "content": "probando otra vez si sale userID",
-    "important": false,
-    "userId": "666856ffbc449945449331f2"
+    "content": "probando creación de notas con jwt",
+    "important": true
 }

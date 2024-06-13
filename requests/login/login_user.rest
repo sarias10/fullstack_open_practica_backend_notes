@@ -1,0 +1,25 @@
+### Inicio de sesión exitoso
+POST http://localhost:3001/api/login
+content-type: application/json
+
+{
+    "username": "root",
+    "password": "hola"
+}
+### Con kelly
+POST http://localhost:3001/api/login
+content-type: application/json
+
+{
+    "username": "kelly",
+    "password": "hola"
+}
+
+### invalid username or password
+POST http://localhost:3001/api/login
+content-type: application/json
+
+{
+    "username": "root",
+    "password": "salami"
+}
