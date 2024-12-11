@@ -35,6 +35,12 @@ app.use('/api/users', usersRouter)
 app.use('/api/notes', notesRouter)
 app.use('/api/login', loginRouter)
 
+// solo se puede usar en modo test
+if (process.env.NODE_ENV === 'test') {
+    const testingRouter = require('./controllers/testing')
+    app.use('/api/testing', testingRouter)
+}
+
 // handler of requests with unknown endpoint
 app.use(middleware.unknownEndpoint)
 // handler of requests with result to errors
