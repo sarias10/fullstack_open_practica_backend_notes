@@ -12,7 +12,7 @@ content-type: application/json
 
 {
     "username": "kelly",
-    "password": "hola"
+    "password": "root"
 }
 
 ### invalid username or password

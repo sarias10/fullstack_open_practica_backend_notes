@@ -48,9 +48,13 @@ notesRouter.post('/', async (request, response) => {
     const savedNote = await note.save()
     user.notes = user.notes.concat(savedNote._id)
     await user.save()
-
     //un código 201 significa que una solicitud se procesó correctamente y devolvió,o creó, un recurso o resources en el proceso
-    response.status(201).json(savedNote)
+    response.status(201).json({
+        content: savedNote.content,
+        important: savedNote.important,
+        user: { name: user.name },
+        id: savedNote.id,
+    })
 })
 
 notesRouter.delete('/:id', async (request, response) => {
