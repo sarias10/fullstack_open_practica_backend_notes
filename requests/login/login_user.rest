@@ -3,8 +3,8 @@ POST http://localhost:3001/api/login
 content-type: application/json
 
 {
-    "username": "root",
-    "password": "hola"
+    "username": "sergio",
+    "password": "root"
 }
 ### Con kelly
 POST http://localhost:3001/api/login
