@@ -63,7 +63,7 @@ notesRouter.delete('/:id', async (request, response) => {
     response.status(204).end()
 })
 
-notesRouter.put('/:id', (request, response, next) => {
+notesRouter.put('/:id', async (request, response, next) => {
     const body = request.body
 
     const note = {
@@ -71,12 +71,26 @@ notesRouter.put('/:id', (request, response, next) => {
         important: body.important
     }
 
-    Note.findByIdAndUpdate(request.params.id,note,
-        { new: true, runValidators:true, context: 'query' })
-        .then(updatedNote => {
-            response.json(updatedNote)
+    try {
+        const updatedNote = await Note.findByIdAndUpdate(request.params.id, note, {
+            new: true,
+            runValidators: true,
+            context: 'query'
         })
-        .catch(error => next(error))
+
+        const user = await User.findById(updatedNote.user, 'name')
+        if (!user) {
+            return response.status(404).json({ error: 'user not found' })
+        }
+        response.json({
+            content: updatedNote.content,
+            important: updatedNote.important,
+            user: { name: user.name },
+            id: updatedNote.id,
+        })
+    } catch (error) {
+        next(error)
+    }
 })
 
 module.exports = notesRouter

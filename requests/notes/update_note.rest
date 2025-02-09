@@ -2,10 +2,10 @@ GET http://localhost:3001/api/notes/
 
 ###
 
-PUT http://localhost:3001/api/notes/664bc0958404b639db05d335
+PUT http://localhost:3001/api/notes/67a8b0e34687702138f3eb1c
 Content-Type: application/json
 
 {
-    "content": "act",
+    "content": "new note 09/02/2025",
     "important": "false"
 }
